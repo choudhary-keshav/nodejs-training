@@ -3,6 +3,14 @@ require("dotenv").config();
 import express, { Request, Response } from "express";
 const app = express();
 
+interface Post {
+  postId: number;
+  id: number;
+  name: string;
+  email: string;
+  body: string;
+}
+
 const fetchData = async () => {
   try {
     const response = await fetch(

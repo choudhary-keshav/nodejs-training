@@ -13,9 +13,7 @@ const server = http.createServer((req, res) => {
     const receivedObject = JSON.parse(data);
 
     receivedObject.lastName = "Choudhary";
-
     const modifiedObject = JSON.stringify(receivedObject);
-
     res.write(modifiedObject + "\n\n");
 
     switch (req.method) {

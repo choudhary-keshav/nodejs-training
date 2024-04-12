@@ -3,7 +3,15 @@ require("dotenv").config();
 import express, { Request, Response } from "express";
 const app = express();
 
-const fetchData = async () => {
+interface Post {
+  postId: number;
+  id: number;
+  name: string;
+  email: string;
+  body: string;
+}
+
+const fetchData = async (): Promise<Post|null> => {
   try {
     const response = await fetch(
       "https://jsonplaceholder.typicode.com/comments"
@@ -18,7 +26,7 @@ const fetchData = async () => {
 
 app.get("/", async (req: Request, res: Response) => {
   const data = await fetchData();
-  if (data !== null) {
+  if (data) {
     res.json(data);
   } else {
     res.status(500).json({ error: "Error in fetching data from API" });
