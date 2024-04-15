@@ -1,11 +1,10 @@
-//localhost:3000/?email=user2@example.com&password=password2
-//localhost:3000/
-
 const express = require("express");
 const fs = require("fs");
 const app = express();
 
-const authenticateUser = (req: any, res: any, next: any) => {
+import { Request, Response, NextFunction } from "express";
+
+const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.query;
 
   try {
@@ -27,11 +26,11 @@ const authenticateUser = (req: any, res: any, next: any) => {
 
 app.use(authenticateUser);
 
-app.get("/", (req: any, res: any) => {
+app.get("/", (req: Request, res: Response) => {
   res.send("Home Page, credentials matched!");
 });
 
-app.get("/protected", (req: any, res: any) => {
+app.get("/protected", (req: Request, res: Response) => {
   res.send("Protected Route");
 });
 
