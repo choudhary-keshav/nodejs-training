@@ -26,7 +26,7 @@ const fetchData = async () => {
 
 app.get("/", async (req: Request, res: Response) => {
   const data = await fetchData();
-  if (data !== null) {
+  if (data) {
     res.json(data);
   } else {
     res.status(500).json({ error: "Error in fetching data from API" });
@@ -37,7 +37,7 @@ app.post("/:postId?", async (req: Request, res: Response) => {
   const { postId } = req.params;
   const data = await fetchData();
 
-  if (data !== null && postId) {
+  if (data && postId) {
     const filteredData = data.filter(
       (item: any) => item.postId === parseInt(postId)
     );
