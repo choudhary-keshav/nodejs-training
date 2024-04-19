@@ -24,6 +24,10 @@ app.post("/newUser", async (req:Request, res:Response) => {
       firstName: req.body.firstName,
       lastName: req.body.lastName,
     };
+    const userSnapshot = await db.collection("users").doc(user.email).get();
+    if (userSnapshot.exists) {
+      return res.status(404).json({ error: "User already exists, use some other email" });
+    }
     const response = await db.collection("users").doc(id).set(user);
     res.send(response);
   } catch (error) {
@@ -50,6 +54,10 @@ app.put("/updateName", async (req:Request, res:Response) => {
     const email = req.body.email;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
+    const userSnapshot = await db.collection("users").doc(email).get();
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
     const userRef = await db.collection("users").doc(email).update({
       firstName: firstName,
       lastName: lastName,
@@ -64,6 +72,10 @@ app.put("/updateName", async (req:Request, res:Response) => {
 app.delete("/deleteUser", async (req:Request, res:Response) => {
   try {
     const email = req.body.email;
+    const userSnapshot = await db.collection("users").doc(email).get();
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ error: "User not even exist" });
+    }
     const userRef = await db.collection("users").doc(email).delete();
     res.send("User deleted successfully!");
   } catch (error) {
