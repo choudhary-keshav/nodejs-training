@@ -5,7 +5,7 @@ require("dotenv").config();
 import { Request, Response } from "express";
 
 const admin = require("firebase-admin");
-const credentials = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const credentials = require("./../Week3/firebaseConfig.js");
 
 admin.initializeApp({
   credential: admin.credential.cert(credentials),
