@@ -1,4 +1,4 @@
-const { add, subtract, multiply, divide, err, app } = require("../testing");
+const { add, subtract, multiply, divide, err, myApp } = require("../testing");
 const supertest = require("supertest");
 
 test("toBe", () => {
@@ -33,12 +33,11 @@ test("toThrow", () => {
   expect(() => err()).toThrow("I am a new error");
 });
 
-
-test("Testing GET users API", async()=>{
-    await supertest(app)
-    .get('/users')
+test("Testing GET users API", async () => {
+  await supertest(myApp)
+    .get("/users")
     .expect(200)
-    .then((result:any)=>{
-        expect(result &&  result.body)
-    })
-})
+    .then((result: any) => {
+      expect(result && result.body);
+    });
+});
