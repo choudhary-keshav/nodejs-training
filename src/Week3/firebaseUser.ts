@@ -29,9 +29,9 @@ app.post("/newUser", async (req:Request, res:Response) => {
       return res.status(404).json({ error: "User already exists, use some other email" });
     }
     const response = await db.collection("users").doc(id).set(user);
-    res.send(response);
+    res.status(201).send(response);
   } catch (error) {
-    res.send(error);
+    res.status(400).send(error);
   }
 });
 
@@ -43,9 +43,9 @@ app.get("/allUsers", async (req:Request, res:Response) => {
     userData.forEach((doc:any) => {
       allUsers.push(doc.data());
     });
-    res.send(allUsers);
+    res.status(201).send(allUsers);
   } catch (error) {
-    res.send(error);
+    res.status(400).send(error);
   }
 });
 
@@ -77,9 +77,9 @@ app.delete("/deleteUser", async (req:Request, res:Response) => {
       return res.status(404).json({ error: "User not even exist" });
     }
     const userRef = await db.collection("users").doc(email).delete();
-    res.send("User deleted successfully!");
+    res.status(201).send("User deleted successfully!");
   } catch (error) {
-    res.send(error);
+    res.status(400).send(error);
   }
 });
 
