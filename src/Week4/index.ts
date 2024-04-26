@@ -3,28 +3,9 @@ const app = express();
 
 import { Request, Response } from "express";
 
+app.use(express.json());
 const mongoose = require("mongoose");
-
-const userSchema = new mongoose.Schema({
-  name: {
-    required: true,
-    type: String,
-  },
-  age: {
-    type: Number,
-    default: 18,
-  },
-  balance: {
-    type: Number,
-    default: 0,
-  },
-  city: {
-    type: String,
-    default: "Hyderabad",
-  },
-});
-
-const User = mongoose.model("User", userSchema);
+const User=require("./UserModel");
 
 const uri = "mongodb://localhost:27017";
 mongoose
@@ -45,12 +26,12 @@ app.get("/:name", async (req: Request, res: Response) => {
     const existingUser = await User.findOne({ name });
     console.log(existingUser);
     if (existingUser) {
-      res.json(existingUser);
+      res.status(201).json(existingUser);
     } else {
       console.log("----------------CREATED NEW USER-------------------");
       const newUser = new User({ name });
       await newUser.save();
-      res.json(newUser);
+      res.status(201).json(newUser);
     }
   } catch (error) {
     console.log("Error", error);
@@ -58,63 +39,34 @@ app.get("/:name", async (req: Request, res: Response) => {
   }
 });
 
-app.put("/:name/age/:age", async (req: Request, res: Response) => {
-  const name = req.params.name;
-  const age = req.params.age;
-  try {
-    const existingUser = await User.findOne({ name });
-    if (existingUser) {
-      existingUser.age = age;
-      await existingUser.save();
-      res.json({ message: "Age updated successfully" });
-    } else {
-      res.json({ message: "User does not even exist!" });
-    }
-  } catch (error) {
-    res.send(error);
-  }
-});
+app.put("/:name", async (req: Request, res: Response) => {
+  const { name } = req.params;
 
-app.put("/:name/city/:city", async (req: Request, res: Response) => {
-  const name = req.params.name;
-  const city = req.params.city;
-  try {
-    const existingUser = await User.findOne({ name });
-    if (existingUser) {
-      existingUser.city = city;
-      await existingUser.save();
-      res.json({ message: "City updated successfully" });
-    } else {
-      res.json({ message: "User does not even exist!" });
-    }
-  } catch (error) {
-    res.send(error);
-  }
-});
+  const { age, city, balance, transactionType, amount } = req.body;
 
-app.put("/:name/:type/:amount", async (req: Request, res: Response) => {
-  const name = req.params.name;
-  const amount = Number(req.params.amount);
-  const transactionType = req.params.type;
   try {
     const existingUser = await User.findOne({ name });
     if (existingUser) {
-      if (transactionType === "credit") {
-        existingUser.balance = existingUser.balance + amount;
-      } else if (transactionType === "debit") {
-        existingUser.balance = existingUser.balance - amount;
-      } else {
-        res.json({
-          message: "Transaction type can only be either 'credit' or 'debit'.",
-        });
+      if (age) existingUser.age = age;
+      if (city) existingUser.city = city;
+      if (balance && transactionType) {
+        if (transactionType === "credit") {
+          existingUser.balance += amount;
+        } else if (transactionType === "debit") {
+          existingUser.balance -= amount;
+        } else {
+          return res.json({
+            message: "Transaction type can only be either 'credit' or 'debit'.",
+          });
+        }
       }
       await existingUser.save();
-      res.json({ message: "Amount successully credited in user's account!" });
+      res.status(201).json({ message: "User updated successfully" });
     } else {
-      res.json({ message: "User does not even exist!" });
+      res.status(404).json({ message: "User does not even exist!" });
     }
   } catch (error) {
-    res.json(error);
+    res.status(500).json(error);
   }
 });
 
@@ -126,9 +78,9 @@ app.delete("/:name", async (req: Request, res: Response) => {
     if (result.deletedCount === 0) {
       return res.status(404).json({ error: "Object not found" });
     }
-    res.json({ message: "User successfully deleted from the database!" });
+    res.status(201).json({ message: "User successfully deleted from the database!" });
   } catch (error) {
-    res.json(error);
+    res.status(500).json(error);
   }
 });
 
